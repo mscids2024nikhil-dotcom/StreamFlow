@@ -1,0 +1,21 @@
+# Environments and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.env
+
+# Unrelated tool workspace
+rea/
+team_repo/
+
+# Package archives
+*.zip
+*.tar.gz
+
+# IDE and OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
