@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Media Streaming Platform</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">⚡</span>
+        <div>
+          <h2>StreamFlow</h2>
+          <span class="sub-badge">SEA Project</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-view="browse" id="navBrowse">
+          <span class="icon">📁</span> Browse Media
+        </button>
+        <button class="nav-item" data-view="history" id="navHistory">
+          <span class="icon">🕒</span> Playback History
+        </button>
+        <button class="nav-item" data-view="host" id="navHost">
+          <span class="icon">💻</span> Host & Scan
+        </button>
+      </nav>
+
+      <div class="host-info-card" id="hostInfoCard">
+        <h4>Host Status</h4>
+        <div class="status-indicator">
+          <span class="dot pulse"></span>
+          <span id="serverStatusText">Connecting...</span>
+        </div>
+        <p class="ip-display" id="hostIpDisplay">IP: Detecting...</p>
+        <small id="mediaCountDisplay">0 media files</small>
+      </div>
+
+      <div class="user-profile" id="userProfileArea">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div class="user-details">
+          <span class="user-name" id="userNameDisplay">Guest User</span>
+          <button class="auth-btn" id="authBtn">Sign In</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search audio, video, movies, tracks...">
+        </div>
+        <div class="filter-pills" id="categoryPills">
+          <button class="pill active" data-category="">All</button>
+          <button class="pill" data-type="video">🎬 Videos</button>
+          <button class="pill" data-type="audio">🎵 Audio</button>
+        </div>
+      </header>
+
+      <!-- View: Browse -->
+      <section class="content-view active" id="browseView">
+        <div class="section-header">
+          <h2 id="viewTitle">All Media Files</h2>
+          <span class="count-badge" id="resultsCount">0 items</span>
+        </div>
+        <div class="media-grid" id="mediaGrid">
+          <div class="empty-state">Loading library...</div>
+        </div>
+      </section>
+
+      <!-- View: History -->
+      <section class="content-view" id="historyView">
+        <div class="section-header">
+          <h2>Your Playback History</h2>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="empty-state">Please sign in to track playback history.</div>
+        </div>
+      </section>
+
+      <!-- View: Host Management -->
+      <section class="content-view" id="hostView">
+        <div class="section-header">
+          <h2>Media Host & Directory Management</h2>
+        </div>
+        <div class="host-control-panel">
+          <div class="panel-card">
+            <h3>📂 Scan Local Host Folder</h3>
+            <p>Select or type a folder path on the host machine to index audio & video files.</p>
+            <div class="scan-form">
+              <input type="text" id="scanFolderInput" placeholder="e.g. C:\Users\Username\Videos or D:\Music">
+              <button class="btn btn-primary" id="startScanBtn">Scan Folder</button>
+            </div>
+            <div id="scanResultBox" class="scan-result-box hidden"></div>
+          </div>
+
+          <div class="panel-card">
+            <h3>🌐 Network Streaming Info</h3>
+            <p>Connect client devices (Android phone or another PC) by opening this URL in their browser:</p>
+            <div class="lan-url-box" id="lanUrlBox">http://...</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Persistent Player Bar -->
+    <footer class="player-bar" id="playerBar">
+      <div class="now-playing">
+        <div class="now-playing-icon" id="nowPlayingIcon">🎬</div>
+        <div class="now-playing-info">
+          <h4 id="nowPlayingTitle">Select media to play</h4>
+          <span id="nowPlayingMeta">Waiting for selection</span>
+        </div>
+      </div>
+
+      <div class="player-controls">
+        <div class="control-buttons">
+          <button class="btn-ctrl" id="rewindBtn" title="Rewind 10s">⏪ 10s</button>
+          <button class="btn-ctrl play-btn" id="playPauseBtn" title="Play / Pause">▶</button>
+          <button class="btn-ctrl" id="forwardBtn" title="Forward 10s">10s ⏩</button>
+        </div>
+        <div class="progress-container">
+          <span class="time-label" id="currentTime">00:00</span>
+          <input type="range" class="progress-bar" id="progressBar" value="0" min="0" max="100" step="0.1">
+          <span class="time-label" id="totalDuration">00:00</span>
+        </div>
+      </div>
+
+      <div class="player-extras">
+        <span class="vol-icon">🔊</span>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="1">
+        <button class="btn-ctrl" id="videoModalToggle" title="Open Video Screen">📺</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Video Player Modal -->
+  <div class="modal-overlay hidden" id="videoModal">
+    <div class="video-modal-content">
+      <div class="video-modal-header">
+        <h3 id="modalVideoTitle">Video Player</h3>
+        <button class="close-btn" id="closeVideoModal">✕</button>
+      </div>
+      <div class="video-wrapper">
+        <video id="mainVideoPlayer" controls playsinline></video>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay hidden" id="authModal">
+    <div class="auth-modal-content">
+      <div class="modal-header">
+        <h3 id="authModalTitle">Sign In</h3>
+        <button class="close-btn" id="closeAuthModal">✕</button>
+      </div>
+      <div class="auth-tabs">
+        <button class="tab-btn active" id="tabLogin">Login</button>
+        <button class="tab-btn" id="tabRegister">Register</button>
+      </div>
+      <form id="authForm" class="auth-form">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="authUsername" required placeholder="Enter username">
+        </div>
+        <div class="form-group hidden" id="emailGroup">
+          <label>Email</label>
+          <input type="email" id="authEmail" placeholder="Enter email address">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="authPassword" required placeholder="Enter password">
+        </div>
+        <div class="auth-error-msg hidden" id="authErrorMsg"></div>
+        <button type="submit" class="btn btn-primary" id="authSubmitBtn">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hidden Audio Player for audio tracks -->
+  <audio id="mainAudioPlayer"></audio>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
